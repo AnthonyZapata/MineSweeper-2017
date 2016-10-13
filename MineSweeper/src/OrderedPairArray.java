@@ -28,9 +28,19 @@ public class OrderedPairArray {
 	}
 	
 	public void addPair(OrderedPair pair) {
-		if (!isMember(pair) && numCount < length) {
-			pairArray[numCount] = pair;
-			numCount++;
+		if (!isMember(pair)) {
+			if (numCount < length) {
+				pairArray[numCount] = pair;
+				numCount++;
+			} else {
+				OrderedPair[] newArray = new OrderedPair[length*2];
+				for (int i = 0; i < numCount; i++) {
+					newArray[i] = pairArray[i];
+				}
+				pairArray[numCount] = pair;
+				numCount++;
+			}
+			
 		}
 	}
 }

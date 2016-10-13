@@ -20,15 +20,15 @@ public class Mines {
 			int x = (new Random()).nextInt(9);
 			int y = (new Random()).nextInt(9);
 			OrderedPair pair = new OrderedPair(x, y);
-			minePositions.addPair(pair);  //The positions are stored as OrderedPairs
+		minePositions.addPair(pair);  //The positions are stored as OrderedPairs
 		}
 		for (OrderedPair p : getMinePositions()) {
 			minesArray[p.x][p.y] = 1;
 		}
 	}
 	
-	public boolean isMine(int column, int row) {
-		return minesArray[column][row] > 0;
+	public boolean isMine(OrderedPair p) {
+		return minesArray[p.x][p.y] > 0;
 	}
 	
 	public int getTotalMines() {
@@ -37,6 +37,27 @@ public class Mines {
 	public OrderedPair[] getMinePositions() {
 		return minePositions.getPairArray();
 	}
+	public int findMinesAround(OrderedPair minePos) {
+		//Return the number of Mines around the cell which was pressed.
+		int mineCounter = 0;
+		for (int x = -1; x < 2; x++) {
+			for (int y = -1; y < 2; y++) {
+				int cellX = minePos.x + x;
+				int cellY = minePos.y + y;
+				OrderedPair aroundMine = new OrderedPair(cellX, cellY);
+				
+				if (cellX >= 0 && cellY >= 0 && cellX < TOTAL_COLUMNS && cellY < TOTAL_ROWS) {
+					if (isMine(aroundMine)) {
+						mineCounter++;
+					}
+				}
+			}
+		}
+		return mineCounter; //
+	}
+	
+	
+	
 	
 }
 

@@ -89,6 +89,7 @@ public class MyMouseAdapter extends MouseAdapter {
 		if (myPanel == null) {return;}
 		int gridX = myPanel.getGridX(e.getX(), e.getY());
 		int gridY = myPanel.getGridY(e.getX(), e.getY());
+		OrderedPair mouseReleasePos = new OrderedPair(gridX, gridY);
 		
 		switch (e.getButton()) {
 		case 1:		//Left mouse button	
@@ -99,13 +100,13 @@ public class MyMouseAdapter extends MouseAdapter {
 				
 				if (oldColor != Color.RED) { //The cell does not have a flag
 					
-					if (!myMines.isMine(gridX, gridY)) {
+					if (!myMines.isMine(mouseReleasePos)) {
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
+						myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = myMines.findMinesAround(mouseReleasePos);
 						myPanel.repaint();
 					} else { //The cell is a mine
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.BLACK;
 						for (OrderedPair p : myMines.getMinePositions()) {
-				
 							myPanel.colorArray[p.x][p.y] = Color.BLACK;
 						}
 
@@ -123,7 +124,7 @@ public class MyMouseAdapter extends MouseAdapter {
 				Color oldColor = myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY];
 				if (oldColor == Color.WHITE) {
 					myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
-				} else {
+				} else if (oldColor == Color.RED) {
 					myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.WHITE;
 				}	
 				myPanel.repaint();
