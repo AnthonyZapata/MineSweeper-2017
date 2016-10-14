@@ -56,6 +56,58 @@ public class Mines {
 		return mineCounter; //
 	}
 	
+	public OrderedPairArray findBlocksAround(OrderedPair p, OrderedPairArray pArray) {
+		//Return an OrderedPairArray of the positions of the empty squares
+		for (int x = -1; x < 2; x++) {
+			for (int y = -1; y < 2; y++) {
+				int cellX = p.x + x;
+				int cellY = p.y + y;
+				OrderedPair aroundMine = new OrderedPair(cellX, cellY);
+
+				if (cellX >= 0 && cellY >= 0 && cellX < TOTAL_COLUMNS && cellY < TOTAL_ROWS) { //The cell is inside the grid
+					if (cellX != p.x || cellY != p.y) { //The cell is around the center pair and not the center itself
+						pArray.addPair(aroundMine);
+					}
+				}
+			}
+		}
+		return pArray;
+	}
+	
+	public OrderedPairArray uncoverEmptyBlocks(OrderedPair p) { //Uncovers all the empty cells
+															    // around an empty cell
+		OrderedPairArray firstBlocks = findBlocksAround(p, new OrderedPairArray(8));
+		OrderedPairArray emptyBlocksArray = new OrderedPairArray(8);
+		OrderedPairArray numberedBlocksArray = new OrderedPairArray(8);
+		
+		for (int i=0; i < firstBlocks.getNumCount(); i++) {
+			OrderedPair firstPairs = firstBlocks.getPairArray()[i];
+			if (findMinesAround(firstPairs) == 0) {
+				emptyBlocksArray.addPair(firstPairs);
+			}
+			else if (!isMine(firstPairs)) {
+				numberedBlocksArray.addPair(firstPairs);
+			}
+		}
+		
+		for (int i=0; i < emptyBlocksArray.getNumCount(); i++) { //Iterates through all the empty cells recursively (in a sense!)
+			
+			OrderedPair emptyPairs = emptyBlocksArray.getPairArray()[i];
+			OrderedPairArray aroundBlocks = findBlocksAround(emptyPairs, new OrderedPairArray(8));
+			
+			for (int j=0; j < aroundBlocks.getNumCount(); j++) {
+				OrderedPair aroundPairs = aroundBlocks.getPairArray()[j];
+				if (findMinesAround(aroundPairs) == 0) {
+					emptyBlocksArray.addPair(aroundPairs);
+				}
+				else if (!isMine(aroundPairs)) {
+					numberedBlocksArray.addPair(aroundPairs);
+				}
+			}
+		}
+		return emptyBlocksArray.union(numberedBlocksArray);
+		
+	}
 	
 	
 	

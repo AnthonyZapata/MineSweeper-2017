@@ -33,14 +33,38 @@ public class OrderedPairArray {
 				pairArray[numCount] = pair;
 				numCount++;
 			} else {
-				OrderedPair[] newArray = new OrderedPair[length*2];
+				int newLength = length*2;
+				OrderedPair[] newArray = new OrderedPair[newLength];
 				for (int i = 0; i < numCount; i++) {
 					newArray[i] = pairArray[i];
 				}
-				pairArray[numCount] = pair;
+				newArray[numCount] = pair;
 				numCount++;
+				this.pairArray = newArray;
+				this.length = newLength;
 			}
 			
 		}
 	}
+	
+	public OrderedPairArray union(OrderedPairArray pArray) {
+		for (int i=0; i < pArray.getNumCount(); i++) {
+			OrderedPair pair = pArray.getPairArray()[i];
+			this.addPair(pair);
+		}
+		return this;
+	}
+	
+
 }
+
+
+
+
+
+
+
+
+
+
+

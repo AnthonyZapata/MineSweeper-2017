@@ -98,23 +98,36 @@ public class MyMouseAdapter extends MouseAdapter {
 				
 				Color oldColor = myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY];
 				
-				if (oldColor != Color.RED) { //The cell does not have a flag
-					
+				if (oldColor != Color.RED && oldColor != Color.GRAY) { //The cell does not have a flag or has been
+																	   // previously pressed.
 					if (!myMines.isMine(mouseReleasePos)) {
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
 						myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = myMines.findMinesAround(mouseReleasePos);
-						myPanel.repaint();
+						
+						//TODO: Open recursively all the blank cells
+						if (myMines.findMinesAround(mouseReleasePos) == 0){
+							OrderedPairArray emptyBlocks = myMines.uncoverEmptyBlocks(mouseReleasePos);
+							for (int i = 0; i < emptyBlocks.getNumCount(); i++) {
+								OrderedPair p = emptyBlocks.getPairArray()[i];
+								myPanel.colorArray[p.x][p.y] = Color.GRAY;
+								myPanel.numberArray[p.x][p.y] = myMines.findMinesAround(p);
+							}
+						}
+						
 					} else { //The cell is a mine
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.BLACK;
 						for (OrderedPair p : myMines.getMinePositions()) {
+							if (myPanel.colorArray[p.x][p.y] == Color.RED) { //If flag was set then an X appears over it.
+								myPanel.numberArray[p.x][p.y] = -1;
+							}
 							myPanel.colorArray[p.x][p.y] = Color.BLACK;
 						}
-
-						myPanel.repaint();
 					}
 					
 				}
 			}
+			
+			myPanel.repaint();
 			break;
 			
 		case 3:		//Right mouse button

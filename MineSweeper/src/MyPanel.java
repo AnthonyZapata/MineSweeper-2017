@@ -72,9 +72,17 @@ public class MyPanel extends JPanel {
 					g.setColor(c);
 					g.fillRect(x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 1, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 1, INNER_CELL_SIZE, INNER_CELL_SIZE);
 					
-					if (numberArray[x][y] != 0) {
-						g.setColor(Color.RED);
+					int number = numberArray[x][y];
+					if ( number > 0) {
+						if (number == 1) {g.setColor(Color.RED);}
+						else if (number == 2) {g.setColor(Color.BLUE);}
+						else if (number == 3) {g.setColor(Color.GREEN);}
+						else {g.setColor(Color.ORANGE);}
 						g.drawString(Integer.toString(numberArray[x][y]), x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 10, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
+					} else if (number < 0) {
+						g.setColor(Color.RED);
+						g.drawString("X", x1 + GRID_X + (x * (INNER_CELL_SIZE + 1)) + 10, y1 + GRID_Y + (y * (INNER_CELL_SIZE + 1)) + 20);
+
 					}
 			}
 		}
