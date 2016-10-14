@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 public class MyMouseAdapter extends MouseAdapter {
 	private Random generator = new Random();
 	private Mines myMines;
+	private boolean GAME_OVER = false;
 	
 	public MyMouseAdapter(Mines mines) {//This is the constructor... this code runs first to initialize
 		myMines = mines; //Use the Mines object to obtain the position of the mines.
@@ -36,6 +37,21 @@ public class MyMouseAdapter extends MouseAdapter {
 		myPanel.y = y;
 		
 		return myPanel;
+	}
+
+	public boolean isInsideGrid(MyPanel myPanel, int gridX, int gridY) {
+
+		if ((myPanel.mouseDownGridX != -1) && (myPanel.mouseDownGridY != -1)) {
+			//Had not pressed outside
+			if ((gridX != -1) && (gridY != -1)) {
+				//Is not releasing outside
+				if ((myPanel.mouseDownGridX == gridX) && (myPanel.mouseDownGridY == gridY)) {
+					//Released the mouse button on the same cell where it was pressed
+					return true;
+				} 
+			}
+		} 
+		return false;
 	}
 	
 	public void mousePressedPos(MyPanel myPanel, MouseEvent e) {
@@ -68,23 +84,9 @@ public class MyMouseAdapter extends MouseAdapter {
 		}
 	}
 	
-	public boolean isInsideGrid(MyPanel myPanel, int gridX, int gridY) {
-		
-		if ((myPanel.mouseDownGridX != -1) && (myPanel.mouseDownGridY != -1)) {
-			//Had not pressed outside
-			if ((gridX != -1) && (gridY != -1)) {
-				//Is not releasing outside
-				if ((myPanel.mouseDownGridX == gridX) && (myPanel.mouseDownGridY == gridY)) {
-					//Released the mouse button on the same cell where it was pressed
-					return true;
-				} 
-			}
-		} 
-		return false;
-	}
-	
 	public void mouseReleased(MouseEvent e) {
 		
+		if (GAME_OVER) return; //If mine was pressed do not react to mouse
 		MyPanel myPanel = getGridComponents(e); //Obtain all the frame and grid components
 		if (myPanel == null) {return;}
 		int gridX = myPanel.getGridX(e.getX(), e.getY());
@@ -93,19 +95,20 @@ public class MyMouseAdapter extends MouseAdapter {
 		
 		switch (e.getButton()) {
 		case 1:		//Left mouse button	
-			
+
 			if (isInsideGrid(myPanel, gridX, gridY)) { //If released on the same cell as it was pressed...
-				
+
 				Color oldColor = myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY];
-				
+
 				if (oldColor != Color.RED && oldColor != Color.GRAY) { //The cell does not have a flag or has been
-																	   // previously pressed.
-					if (!myMines.isMine(mouseReleasePos)) {
+					// previously pressed.
+					if (!myMines.isMine(mouseReleasePos)) { 
+						//If the cell is not a mine paint it gray and draw the number of mines nearby
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
 						myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = myMines.findMinesAround(mouseReleasePos);
-						
-						//TODO: Open recursively all the blank cells
+
 						if (myMines.findMinesAround(mouseReleasePos) == 0){
+							//If the pressed cell is empty, open recursively all the blank cells.
 							OrderedPairArray emptyBlocks = myMines.uncoverEmptyBlocks(mouseReleasePos);
 							for (int i = 0; i < emptyBlocks.getNumCount(); i++) {
 								OrderedPair p = emptyBlocks.getPairArray()[i];
@@ -113,21 +116,22 @@ public class MyMouseAdapter extends MouseAdapter {
 								myPanel.numberArray[p.x][p.y] = myMines.findMinesAround(p);
 							}
 						}
-						
 					} else { //The cell is a mine
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.BLACK;
-						for (OrderedPair p : myMines.getMinePositions()) {
+						for (OrderedPair p : myMines.getMinePositions()) { //Show the position of all the mines.
 							if (myPanel.colorArray[p.x][p.y] == Color.RED) { //If flag was set then an X appears over it.
 								myPanel.numberArray[p.x][p.y] = -1;
 							}
-							myPanel.colorArray[p.x][p.y] = Color.BLACK;
+							myPanel.colorArray[p.x][p.y] = Color.BLACK;	
 						}
+						myPanel.repaint();
+						myMines.mineExploted();
+						GAME_OVER = true;
 					}
-					
 				}
 			}
-			
 			myPanel.repaint();
+			
 			break;
 			
 		case 3:		//Right mouse button

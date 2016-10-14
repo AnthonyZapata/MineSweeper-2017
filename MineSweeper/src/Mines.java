@@ -1,5 +1,7 @@
 import java.util.Random;
 
+import javax.swing.JOptionPane;
+
 public class Mines {
 	
 	private static final int TOTAL_COLUMNS = 9;
@@ -36,6 +38,9 @@ public class Mines {
 	}
 	public OrderedPair[] getMinePositions() {
 		return minePositions.getPairArray();
+	}
+	public void mineExploted() {
+		JOptionPane.showMessageDialog(null,"MINE EXPLOTED. YOU LOST!!!","DEFEATED",JOptionPane.PLAIN_MESSAGE);
 	}
 	public int findMinesAround(OrderedPair minePos) {
 		//Return the number of Mines around the cell which was pressed.
