@@ -1,8 +1,10 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class MyPanel extends JPanel {
@@ -36,6 +38,7 @@ public class MyPanel extends JPanel {
 				numberArray[x][y] = 0;
 			}
 		}
+
 	}
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
