@@ -8,7 +8,6 @@ import java.util.Random;
 import javax.swing.JFrame;
 
 public class MyMouseAdapter extends MouseAdapter {
-	private Random generator = new Random();
 	private Mines myMines;
 	private boolean GAME_OVER = false;
 	
@@ -93,6 +92,7 @@ public class MyMouseAdapter extends MouseAdapter {
 		int gridY = myPanel.getGridY(e.getX(), e.getY());
 		OrderedPair mouseReleasePos = new OrderedPair(gridX, gridY);
 		
+		
 		switch (e.getButton()) {
 		case 1:		//Left mouse button	
 
@@ -106,7 +106,7 @@ public class MyMouseAdapter extends MouseAdapter {
 						//If the cell is not a mine paint it gray and draw the number of mines nearby
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.GRAY;
 						myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = myMines.findMinesAround(mouseReleasePos);
-
+						myMines.clickedCell(mouseReleasePos);
 						if (myMines.findMinesAround(mouseReleasePos) == 0){
 							//If the pressed cell is empty, open recursively all the blank cells.
 							OrderedPairArray emptyBlocks = myMines.uncoverEmptyBlocks(mouseReleasePos);
@@ -114,15 +114,21 @@ public class MyMouseAdapter extends MouseAdapter {
 								OrderedPair p = emptyBlocks.getPairArray()[i];
 								myPanel.colorArray[p.x][p.y] = Color.GRAY;
 								myPanel.numberArray[p.x][p.y] = myMines.findMinesAround(p);
+								myMines.clickedCell(p);;  //Mark cells as pressed in the mines array
 							}
 						}
+						
+						if (myMines.areAllCellsPressed()) {
+							myPanel.repaint();
+							GAME_OVER = true;
+							myMines.noMineExploted();
+						}
+						
 					} else { //The cell is a mine
 						myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.BLACK;
 						for (OrderedPair p : myMines.getMinePositions()) { //Show the position of all the mines.
-							if (myPanel.colorArray[p.x][p.y] == Color.RED) { //If flag was set then an X appears over it.
-								myPanel.numberArray[p.x][p.y] = -1;
-							}
-							myPanel.colorArray[p.x][p.y] = Color.BLACK;	
+							
+							myPanel.colorArray[p.x][p.y] = Color.BLACK;	//Paint black all the mine positions
 						}
 						myPanel.repaint();
 						myMines.mineExploted();
@@ -141,8 +147,10 @@ public class MyMouseAdapter extends MouseAdapter {
 				Color oldColor = myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY];
 				if (oldColor == Color.WHITE) {
 					myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.RED;
+					myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = -1;
 				} else if (oldColor == Color.RED) {
 					myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = Color.WHITE;
+					myPanel.numberArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = 0;
 				}	
 				myPanel.repaint();
 			}

@@ -32,7 +32,19 @@ public class Mines {
 	public boolean isMine(OrderedPair p) {
 		return minesArray[p.x][p.y] > 0;
 	}
-	
+	public void clickedCell(OrderedPair p) {
+		if (!isMine(p))
+			minesArray[p.x][p.y] = -1;
+	}
+	public boolean areAllCellsPressed() {
+		for (int x = 0; x < TOTAL_COLUMNS; x++) {   //Fill the array with 0
+			for (int y = 0; y < TOTAL_ROWS; y++) {
+				if (minesArray[x][y] == 0)
+					return false;
+			}
+		}
+		return true;
+	}
 	public int getTotalMines() {
 		return TOTAL_MINES;
 	}
@@ -42,6 +54,10 @@ public class Mines {
 	public void mineExploted() {
 		JOptionPane.showMessageDialog(null,"MINE EXPLOTED. YOU LOST!!!","DEFEATED",JOptionPane.PLAIN_MESSAGE);
 	}
+	public void noMineExploted() {
+		JOptionPane.showMessageDialog(null,"THE GAME IS INTACT.\n YOU WON!!!","VICTORY",JOptionPane.PLAIN_MESSAGE);
+	}
+	
 	public int findMinesAround(OrderedPair minePos) {
 		//Return the number of Mines around the cell which was pressed.
 		int mineCounter = 0;
